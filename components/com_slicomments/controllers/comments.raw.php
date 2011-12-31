@@ -112,6 +112,61 @@ class sliCommentsControllerComments extends JController
 		}
 	}
 
+	public function live()
+	{
+		try
+		{
+			try
+			{
+				$article_id = JRequest::getInt('article_id', 0);
+				if (!$article_id) throw new Exception(JText::_('COM_COMMENTS_ERROR_INVALID_ID'));
+				$since = JFactory::getDate(JRequest::getInt('lt', false));
+			}
+			catch (Exception $e)
+			{
+				if (JDEBUG)
+				{
+					throw new Exception(JText::sprintf('COM_COMMENTS_ERROR_BAD_REQUEST', $e->getMessage()), 400);
+				}
+				else
+				{
+					throw new Exception("Error Processing Request", 500);
+				}
+			}
+
+			$model = $this->getModel();
+			$state = $model->getState();
+			$state->set('list.start', 0);
+			$state->set('list.limit', 0);
+			$state->set('article.id', $article_id);
+			$state->set('since', $since);
+
+			$comments = $model->getItems();
+
+			if (count($comments))
+			{
+				// Load the view only if there is at least one comment
+				$view = $this->getView('comments', 'html');
+				require_once JPATH_COMPONENT_ADMINISTRATOR.'/helpers/comments.php';
+				$view->params = $model->params;
+
+				foreach ($comments as $comment)
+				{
+					$view->partial('comment', $comment);
+				}
+			}
+			else
+			{
+				JResponse::setHeader('status', 204);
+			}
+		}
+		catch (Exception $e) 
+		{
+			JResponse::setHeader('status', $e->getCode());
+			echo $e->getMessage();
+		}
+	}
+
 	public function getModel($name = 'comments', $prefix = 'sliCommentsModel', $config = array())
 	{
 		return parent::getModel($name, $prefix, $config);

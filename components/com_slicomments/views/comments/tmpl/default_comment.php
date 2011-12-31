@@ -28,7 +28,7 @@ $user = JFactory::getUser();
 			<span class="author">
 				<?php echo $this->linkToProfile($user_id, $name); ?>
 			</span>
-			<span class="created">
+			<span class="created" data-created="<?php echo JFactory::getDate($created)->toUnix();?>">
 				<?php echo sliCommentsHelper::human_time_diff($created);?>
 			</span>
 			<?php if ($rating != 0) : ?>

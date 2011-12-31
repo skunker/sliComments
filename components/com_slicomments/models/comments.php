@@ -530,6 +530,12 @@ class sliCommentsModelComments extends JModelList
 		// Filter by article
 		$query->where('a.article_id = '.(int) $this->getState('article.id'));
 
+		$since = $this->getState('since', false);
+		if ($since && $since instanceof JDate)
+		{
+			$query->where('a.created > "' . $since->toMYSQL() . '"');
+		}
+
 		// Show only approved comments
 		$query->where('a.status = 1');
 
