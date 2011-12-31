@@ -8,6 +8,7 @@ A powerful and slick comments component for Joomla!
 
 ## Features ##
 
+* Live comments
 * Ajax
 * Akismet plugin
 * Approval system
